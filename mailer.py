@@ -29,9 +29,12 @@ def mail_connect(processor):
                     print('Success: ', m_id)
                     typ, data = M.copy(msg_id, 'INBOX.Archive.Processed')
                     print(typ, data)
+                    if typ == 'OK':
+                        M.store(msg_id, '+FLAGS', '\\Deleted')
                 else:
                     print('Fail: ', m_id)
-                break
+                # break
+            M.expunge()
         finally:
             print('Done executor!')
             M.close()

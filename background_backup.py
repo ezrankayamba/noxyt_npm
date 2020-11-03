@@ -7,8 +7,7 @@ import json
 import gmail
 from api import purchase_token
 from db import db_connect
-from models import Customer, Message
-import mailer
+from models import Customer
 
 API_STATUS_KEY = 'status'
 API_STATUS_SUCCESS = 'SUCCESS'
@@ -91,45 +90,47 @@ def parse_mail(conn, msg_text, c, dry_run=False):
     return False
 
 
-def mail_processor_thread():
+def mail_reader_thread():
+    service = gmail.init_service()
+    username = gmail.base_email
+    email = f'{username}@gmail.com'
+
     while True:
         with db_connect() as conn:
             print('Reading mail...')
             customers = Customer.list(conn)
             for c in customers:
-                messages = Message.new_messages(conn, c.email)
+                labels = gmail.my_labels(service, c)
+                q = 'from:Tigo.Pesa@tigo.co.tz'
+                msg_obj = service.users().messages()
+                lbs_m = [labels['main']]
+                # lbs_m = ['INBOX']
+                lbs_s = [labels['success']]
+                lbs_f = [labels['fail']]
+                results = msg_obj.list(userId='me', labelIds=lbs_m, q=q).execute()
+                print(results)
+                messages = results.get('messages', [])
                 for message in messages:
-                    msg_text = message['body']
+                    msg = msg_obj.get(userId='me', id=message['id']).execute()
+                    payload = msg['payload']
+                    msg_text = None
+                    if 'parts' in payload:
+                        for p in payload['parts']:
+                            if p['mimeType'] == 'text/plain':
+                                data = p['body']['data']
+                                msg_text = base64.b64decode(data).decode('UTF-8')
+                                break
+                    else:
+                        data = payload['body']['data']
+                        msg_text = base64.b64decode(data).decode('UTF-8')
+
                     if msg_text and parse_mail(conn, msg_text, c):
                         print('Successfully parsed the mail')
-                        Message.set_processed(conn, message['id'], 1)
+                        msg_labels = {'removeLabelIds': lbs_m, 'addLabelIds': lbs_s}
+                        service.users().messages().modify(userId='me', id=message['id'], body=msg_labels).execute()
                     else:
                         print('Failed to parse the mail')
-                        Message.set_processed(conn, message['id'], -1)
+                        msg_labels = {'removeLabelIds': lbs_m, 'addLabelIds': lbs_f}
+                        service.users().messages().modify(userId='me', id=message['id'], body=msg_labels).execute()
             break
-        time.sleep(15)
-
-
-def mail_reader_thread():
-    while True:
-        with db_connect() as conn:
-            def save_mail(dest, msg_id, msg):
-                sql = f"insert into npm_messages(message_id, email, body) values (%s, %s,  %s)"
-                print(sql)
-                params = (dest, msg_id, msg)
-                cursor = None
-                try:
-                    cursor = conn.cursor()
-                    cursor.execute(sql, params)
-                    conn.commit()
-                    print(f'Rows interted: {cursor.rowcount}')
-                    if cursor.rowcount:
-                        return True
-                except Exception as e:
-                    print("DB Error: ", e)
-                finally:
-                    if cursor:
-                        cursor.close()
-                return False
-            mailer.mail_connect(save_mail)
         time.sleep(15)

@@ -22,6 +22,21 @@ class Customer:
         return res
 
     @staticmethod
+    def new_messages(conn, email):
+        cursor = None
+        res = []
+        try:
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM npm_messages where status=0 and email=%s', (email))
+            res = [Customer(row) for row in cursor.fetchall()]
+        except Exception as e:
+            print("Error?", e)
+        finally:
+            if cursor:
+                cursor.close()
+        return res
+
+    @staticmethod
     def get(conn, email):
         cursor = None
         res = []
@@ -35,6 +50,41 @@ class Customer:
             if cursor:
                 cursor.close()
         return res[0] if len(res) else None
+
+
+class Message:
+    def __init__(self, row):
+        m_id, email, body = row
+        self.id = m_id
+        self.email = email
+        self.body = body
+
+    @staticmethod
+    def new_messages(conn, email):
+        cursor = None
+        res = []
+        try:
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM npm_messages where status=0 and email=%s', (email))
+            res = [Message(row) for row in cursor.fetchall()]
+        except Exception as e:
+            print("Error?", e)
+        finally:
+            if cursor:
+                cursor.close()
+        return res
+
+    @staticmethod
+    def set_processed(conn, m_id, status):
+        try:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE npm_messages set status=%s WHERE id=%s", (status, m_id))
+            conn.commit()
+        except Exception as e:
+            print("Error?", e)
+        finally:
+            if cursor:
+                cursor.close()
 
 
 class Alias:
