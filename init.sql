@@ -35,7 +35,6 @@ CREATE TABLE npm_messages (
   id int(11) primary key AUTO_INCREMENT,
   status int(2) NOT NULL default 0,
   email varchar(100) NOT NULL,
-  msisdn varchar(20) NOT NULL,
-  UNIQUE KEY name (name),
-  UNIQUE KEY email (email)
+  message_id varchar(100) NOT NULL,
+  body varchar(2000) NOT NULL
 );
