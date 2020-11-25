@@ -30,3 +30,12 @@ CREATE TABLE npm_aliases (
   PRIMARY KEY (id),
   UNIQUE KEY email (email,alias)
 );
+
+CREATE TABLE npm_messages (
+  id int(11) primary key AUTO_INCREMENT,
+  status int(2) NOT NULL default 0,
+  email varchar(100) NOT NULL,
+  msisdn varchar(20) NOT NULL,
+  UNIQUE KEY name (name),
+  UNIQUE KEY email (email)
+);

@@ -116,7 +116,7 @@ def mail_reader_thread():
             def save_mail(dest, msg_id, msg):
                 sql = f"insert into npm_messages(message_id, email, body) values (%s, %s,  %s)"
                 print(sql)
-                params = (dest, msg_id, msg)
+                params = (msg_id, dest, msg)
                 cursor = None
                 try:
                     cursor = conn.cursor()
