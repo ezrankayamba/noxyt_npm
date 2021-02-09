@@ -4,7 +4,7 @@ import re
 import base64
 import datetime
 import json
-import gmail
+# import gmail
 from api import purchase_token
 from db import db_connect
 from models import Customer, Message
