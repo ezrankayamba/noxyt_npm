@@ -94,10 +94,12 @@ def parse_mail(conn, msg_text, c, dry_run=False):
 def mail_processor_thread():
     while True:
         with db_connect() as conn:
-            print('Reading mail...')
+            print('Processing mail...')
             customers = Customer.list(conn)
+            print(f'{len(customers)} customer(s)')
             for c in customers:
                 messages = Message.new_messages(conn, c.email)
+                print(f'{len(messages)} message(s)')
                 for message in messages:
                     msg_text = message['body']
                     if msg_text and parse_mail(conn, msg_text, c):
