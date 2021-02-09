@@ -106,7 +106,7 @@ def mail_processor_thread():
                     else:
                         print('Failed to parse the mail')
                         Message.set_processed(conn, message['id'], -1)
-            break
+            # break
         time.sleep(15)
 
 

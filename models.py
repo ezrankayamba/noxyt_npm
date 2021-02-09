@@ -54,7 +54,7 @@ class Customer:
 
 class Message:
     def __init__(self, row):
-        m_id, email, body = row
+        m_id, status, email, message_id, body = row
         self.id = m_id
         self.email = email
         self.body = body

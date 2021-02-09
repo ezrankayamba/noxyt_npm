@@ -5,11 +5,16 @@ import configparser
 
 
 def read_msg(M, msg_id):
-    _, data = M.fetch(msg_id, '(UID BODY[HEADER.FIELDS (Delivered-To)])')
-    _, data2 = M.fetch(msg_id, '(UID BODY[TEXT])')
-    dest = email.message_from_string(data[0][1].decode("utf-8"))
-    msg = email.message_from_string(data2[0][1].decode("utf-8"))
-    return (dest['Delivered-To'], quopri.decodestring(msg.get_payload()).decode('utf-8').split('[Tigo Tanzania]')[0])
+    _, deliv_data = M.fetch(msg_id, '(UID BODY[HEADER.FIELDS (Delivered-To)])')
+    _, to_data = M.fetch(msg_id, '(UID BODY[HEADER.FIELDS (To)])')
+    print(deliv_data)
+    print(to_data)
+    _, text_data = M.fetch(msg_id, '(UID BODY[TEXT])')
+    dest = email.message_from_string(deliv_data[0][1].decode("utf-8"))
+    to = email.message_from_string(to_data[0][1].decode("utf-8"))
+    msg = email.message_from_string(text_data[0][1].decode("utf-8"))
+    sanitized_to = to['To'].split(' ')[0].replace('"', '')
+    return (dest['Delivered-To'], sanitized_to, quopri.decodestring(msg.get_payload()).decode('utf-8').split('[Tigo Tanzania]')[0])
 
 
 def mail_connect(processor):
@@ -23,7 +28,9 @@ def mail_connect(processor):
         try:
             _, data = M.search(None, '(From "Tigo.Pesa@tigo.co.tz")')
             for msg_id in data[0].split():
-                dest, msg = read_msg(M, msg_id)
+                dest, to, msg = read_msg(M, msg_id)
+                print(dest)
+                print(to)
                 m_id = int(msg_id)
                 if processor(dest, m_id, msg):
                     print('Success: ', m_id)
