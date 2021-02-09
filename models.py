@@ -65,7 +65,7 @@ class Message:
         res = []
         try:
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM npm_messages where status=0 and email=%s', (email))
+            cursor.execute('SELECT * FROM npm_messages where status=0 and email=%s', (email,))
             res = [Message(row) for row in cursor.fetchall()]
         except Exception as e:
             print("Error recording message2", e, email)
