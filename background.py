@@ -92,7 +92,7 @@ def parse_mail(conn, msg_text, c, dry_run=False):
 
 
 def mail_processor_thread():
-    while True:
+    for i in range(10):
         with db_connect() as conn:
             print('Processing mail...')
             try:
@@ -114,11 +114,11 @@ def mail_processor_thread():
             except Exception as e:
                 print("Error processing emails: ", e)
             # break
-        time.sleep(15)
+        time.sleep(5)
 
 
 def mail_reader_thread():
-    while True:
+    for i in range(10):
         with db_connect() as conn:
             def save_mail(dest, msg_id, msg):
                 sql = f"insert into npm_messages(message_id, email, body) values (%s, %s,  %s)"
@@ -139,4 +139,4 @@ def mail_reader_thread():
                         cursor.close()
                 return False
             mailer.mail_connect(save_mail)
-        time.sleep(15)
+        time.sleep(5)
