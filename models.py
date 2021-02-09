@@ -81,7 +81,7 @@ class Message:
             cursor.execute("UPDATE npm_messages set status=%s WHERE id=%s", (status, m_id))
             conn.commit()
         except Exception as e:
-            print("Error updating message", e)
+            print("Error updating message", e, m_id, status)
         finally:
             if cursor:
                 cursor.close()
