@@ -96,6 +96,7 @@ def mail_processor_thread():
         with db_connect() as conn:
             print('Reading mail...')
             customers = Customer.list(conn)
+            print(customers)
             for c in customers:
                 messages = Message.new_messages(conn, c.email)
                 for message in messages:
