@@ -15,7 +15,7 @@ class Customer:
             cursor.execute("SELECT * FROM npm_customers")
             res = [Customer(row) for row in cursor.fetchall()]
         except Exception as e:
-            print("Error?", e)
+            print("Error listing customers", e)
         finally:
             if cursor:
                 cursor.close()
@@ -30,7 +30,7 @@ class Customer:
             cursor.execute('SELECT * FROM npm_messages where status=0 and email=%s', (email))
             res = [Customer(row) for row in cursor.fetchall()]
         except Exception as e:
-            print("Error?", e)
+            print("Error recording new message", e)
         finally:
             if cursor:
                 cursor.close()
@@ -45,7 +45,7 @@ class Customer:
             cursor.execute("SELECT * FROM npm_customers where email=%s", (email,))
             res = [Customer(row) for row in cursor.fetchall()]
         except Exception as e:
-            print("Error?", e)
+            print("Error fething customers", e)
         finally:
             if cursor:
                 cursor.close()
@@ -68,7 +68,7 @@ class Message:
             cursor.execute('SELECT * FROM npm_messages where status=0 and email=%s', (email))
             res = [Message(row) for row in cursor.fetchall()]
         except Exception as e:
-            print("Error?", e)
+            print("Error recording message2", e)
         finally:
             if cursor:
                 cursor.close()
@@ -81,7 +81,7 @@ class Message:
             cursor.execute("UPDATE npm_messages set status=%s WHERE id=%s", (status, m_id))
             conn.commit()
         except Exception as e:
-            print("Error?", e)
+            print("Error updating message", e)
         finally:
             if cursor:
                 cursor.close()
@@ -104,7 +104,7 @@ class Alias:
             cursor.execute("SELECT * FROM npm_aliases where used=0 limit 1 ")
             res = [Alias(row) for row in cursor.fetchall()]
         except Exception as e:
-            print("Error?", e)
+            print("Error updating as unused", e)
         finally:
             if cursor:
                 cursor.close()
@@ -117,7 +117,7 @@ class Alias:
             cursor.execute("UPDATE npm_aliases set used=1 WHERE id=%s", (a_id,))
             conn.commit()
         except Exception as e:
-            print("Error?", e)
+            print("Error setting as used: ", e)
         finally:
             if cursor:
                 cursor.close()

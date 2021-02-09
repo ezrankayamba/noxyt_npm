@@ -52,7 +52,7 @@ if __name__ == '__main__':
                             Alias.set_used(conn, unused.id)
                             print(f'Successfully onboared {name} - {msisdn} with email id/alias: {unused.alias}')
                     except Exception as e:
-                        print("Error?...", e)
+                        print("Error onboarding...", e)
                     finally:
                         if cursor:
                             cursor.close()
