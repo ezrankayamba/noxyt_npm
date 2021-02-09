@@ -104,12 +104,13 @@ def mail_processor_thread():
                     for message in messages:
                         print(message)
                         msg_text = message.body
+                        msg_id = message.id
                         if msg_text and parse_mail(conn, msg_text, c):
-                            print('Successfully parsed the mail')
-                            Message.set_processed(conn, message['id'], 1)
+                            print(f'Successfully parsed the mail: {msg_id}')
+                            Message.set_processed(conn, msg_id, 1)
                         else:
-                            print('Failed to parse the mail')
-                            Message.set_processed(conn, message['id'], -1)
+                            print(f'Failed to parse the mail: {msg_id}')
+                            Message.set_processed(conn, msg_id, -1)
             except Exception as e:
                 print("Error processing emails: ", e)
             # break
