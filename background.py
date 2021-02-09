@@ -95,19 +95,22 @@ def mail_processor_thread():
     while True:
         with db_connect() as conn:
             print('Processing mail...')
-            customers = Customer.list(conn)
-            print(f'{len(customers)} customer(s)')
-            for c in customers:
-                messages = Message.new_messages(conn, c.email)
-                print(f'{len(messages)} message(s)')
-                for message in messages:
-                    msg_text = message['body']
-                    if msg_text and parse_mail(conn, msg_text, c):
-                        print('Successfully parsed the mail')
-                        Message.set_processed(conn, message['id'], 1)
-                    else:
-                        print('Failed to parse the mail')
-                        Message.set_processed(conn, message['id'], -1)
+            try:
+                customers = Customer.list(conn)
+                print(f'{len(customers)} customer(s)')
+                for c in customers:
+                    messages = Message.new_messages(conn, c.email)
+                    print(f'{len(messages)} message(s)')
+                    for message in messages:
+                        msg_text = message['body']
+                        if msg_text and parse_mail(conn, msg_text, c):
+                            print('Successfully parsed the mail')
+                            Message.set_processed(conn, message['id'], 1)
+                        else:
+                            print('Failed to parse the mail')
+                            Message.set_processed(conn, message['id'], -1)
+            except Exception as e:
+                print("Error processing emails: ", e)
             # break
         time.sleep(15)
 
