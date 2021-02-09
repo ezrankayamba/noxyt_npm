@@ -103,7 +103,7 @@ def mail_processor_thread():
                     print(f'{len(messages)} message(s)')
                     for message in messages:
                         print(message)
-                        msg_text = message['body']
+                        msg_text = message.body
                         if msg_text and parse_mail(conn, msg_text, c):
                             print('Successfully parsed the mail')
                             Message.set_processed(conn, message['id'], 1)
