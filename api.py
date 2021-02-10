@@ -8,6 +8,7 @@ URL = 'http://18.132.125.55/npmv4/api/processMobilePayment'
 def purchase_token(trans_id, amount, payer_account, email, msisdn):
     payload = {'trans_id': trans_id, 'amount': amount, 'payer_account': payer_account, 'email': email, 'msisdn': msisdn}
     r = requests.post(URL, json=payload)
+    print(r)
     return r.json()
 
 

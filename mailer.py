@@ -29,10 +29,10 @@ def mail_connect(processor):
             _, data = M.search(None, '(From "Tigo.Pesa@tigo.co.tz")')
             for msg_id in data[0].split():
                 dest, to, msg = read_msg(M, msg_id)
-                print(dest)
+                # print(dest)
                 print(to)
                 m_id = int(msg_id)
-                if processor(dest, m_id, msg):
+                if processor(to, m_id, msg):
                     print('Success: ', m_id)
                     typ, data = M.copy(msg_id, 'INBOX.Archive.Processed')
                     print(typ, data)
